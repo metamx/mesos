@@ -2033,8 +2033,11 @@ Future<Response> Master::Http::redirect(const Request& request) const
   // http://stackoverflow.com/questions/12436669/using-protocol-relative-uris-within-location-headers
   // which discusses this.
   string basePath = "//" + hostname.get() + ":" + stringify(info.port());
-  if (request.url.path == "/redirect" ||
-      request.url.path == "/" + master->self().id + "/redirect") {
+  string redirectPath = "/redirect";
+  string masterRedirectPath = "/" + master->self().id + "/redirect";
+  if (request.url.path.compare(0, redirectPath.length(), redirectPath) == 0 ||
+      request.url.path
+      .compare(0, masterRedirectPath.length(), masterRedirectPath) == 0 ) {
     // When request url is '/redirect' or '/master/redirect', redirect to the
     // base url of leading master to avoid infinite redirect loop.
     return TemporaryRedirect(basePath);
